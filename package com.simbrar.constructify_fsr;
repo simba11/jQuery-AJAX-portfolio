@@ -1,0 +1,173 @@
+package com.simbrar.constructify_fsr;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.Html;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+
+
+public class FSRActivity6 extends Activity {
+
+    private Button completeBtn;
+    public static final String DEFAULT="N/A";
+    private String mFileName_Floc;
+    private String mFileName_Service;
+    final TextView projectName = (TextView)findViewById(R.id.PROJECT);
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_fsr_6);
+        //load prefs
+        SharedPreferences mPrefs = getSharedPreferences("FSR_data", Context.MODE_PRIVATE);
+    //instantiate/set views.
+        //1
+       // final TextView projectName = (TextView)findViewById(R.id.PROJECT);
+        projectName.setText("Project: " + mPrefs.getString("PROJECT", DEFAULT));
+        final TextView projectCustomer = (TextView)findViewById(R.id.CUSTOMER);
+        projectCustomer.setText("Customer: " + mPrefs.getString("CUSTOMER", DEFAULT));
+        final TextView projectDate = (TextView)findViewById(R.id.DATE);
+        projectDate.setText("Report Date: " + mPrefs.getString("DATE", DEFAULT));
+        //2
+        final TextView cylinders = (TextView)findViewById(R.id.CYLINDERS);
+        cylinders.setText("Number of Cylinders: " + mPrefs.getString("NUM_CYLINDERS", DEFAULT));
+        final TextView co2 = (TextView)findViewById(R.id.CO2);
+        co2.setText("CO2 Level: " + mPrefs.getString("CO2_LEVEL", DEFAULT));
+        //3
+        final TextView flocType = (TextView)findViewById(R.id.TYPE);
+        flocType.setText("Flocculent Type: " + mPrefs.getString("FLOC_TYPE", DEFAULT));
+        final TextView flocLevel = (TextView)findViewById(R.id.LEVEL);
+        flocLevel.setText("Flocculent Level: " + mPrefs.getString("FLOC_LEVEL", DEFAULT));
+        //4
+        final TextView in_NTU = (TextView)findViewById(R.id.IN_NTU);
+        in_NTU.setText("Intake NTU: " + mPrefs.getString("INTAKE_NTU", DEFAULT));
+        final TextView in_PH = (TextView)findViewById(R.id.IN_PH);
+        in_PH.setText("Intake PH: " + mPrefs.getString("INTAKE_PH", DEFAULT));
+        final TextView dis_NTU = (TextView)findViewById(R.id.DIS_NTU);
+        dis_NTU.setText("Discharge NTU: " + mPrefs.getString("DISCHARGE_NTU", DEFAULT));
+        final TextView dis_PH = (TextView)findViewById(R.id.DIS_PH);
+        dis_PH.setText("Discharge PH: " + mPrefs.getString("DISCHARGE_PH", DEFAULT));
+        final TextView top_mani = (TextView)findViewById(R.id.TOP_MANI);
+        top_mani.setText("Top Manifold: " + mPrefs.getString("TOP_MANIFOLD", DEFAULT));
+        final TextView bot_mani = (TextView)findViewById(R.id.BOT_MANI);
+        bot_mani.setText("Bottom Manifold: " + mPrefs.getString("BOTTOM_MANIFOLD", DEFAULT));
+        final TextView backwash = (TextView)findViewById(R.id.BACKWASH);
+        backwash.setText("Backwash: " + mPrefs.getString("BACKWASH", DEFAULT));
+        final TextView flow = (TextView)findViewById(R.id.FLOW);
+        flow.setText("Flow Meter: " + mPrefs.getString("FLOW_METER", DEFAULT));
+        final TextView weather = (TextView)findViewById(R.id.WEATHER);
+        weather.setText("Weather: " + mPrefs.getString("WEATHER", DEFAULT));
+        //5
+        final TextView failure = (TextView)findViewById(R.id.WILL_FAIL);
+        failure.setText("Likelihood of Failure? " + mPrefs.getString("FAILURE", DEFAULT));
+        final TextView failure_notes = (TextView)findViewById(R.id.FAIL_NOTES);
+        failure_notes.setText("Notes: " + mPrefs.getString("FAILURE_NOTES", DEFAULT));
+        final TextView safety = (TextView)findViewById(R.id.IS_SAFE);
+        safety.setText("Safety Concerns? " + mPrefs.getString("SAFETY", DEFAULT));
+        final TextView safety_notes = (TextView)findViewById(R.id.SAFE_NOTES);
+        safety_notes.setText("Notes: " + mPrefs.getString("SAFETY_NOTES", DEFAULT));
+        //audio files
+        mFileName_Floc = mPrefs.getString("FLOC_AUDIO", DEFAULT);
+        mFileName_Service = mPrefs.getString("SERVICE_AUDIO", DEFAULT);
+        //Email
+
+
+        completeBtn = (Button)findViewById(R.id.submit_btn);
+        completeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAlert(v);
+            }
+        });
+    }
+    private void sendEmail(){
+        //HARDCODED, CHANGED AS NEEDED.
+        String to = "sim@simbrar.com";
+        String subject = "constructify test";
+        String body = new String("<html><body>" +
+                "<b><h1>Field Service Report</h1></b></br>" +
+                //Project
+                "<b>Project</b></br>" +
+                "<p>" + projectName.getText() + "</p>" +
+                "<p>" + projectCustomer.getText() + "</p>" +
+                "<p>" + projectDate.getText() + "</p>" +
+                //CO2
+                "<b>CO2</b></br>" +
+                "<p>" + cylinders.getText() + "</p>" +
+                "<p>" + co2.getText() + "</p>" +
+                //Floc
+                "<b>Flocculent</b></br>" +
+                "<p>" + flocType.getText() + "</p>" +
+                "<p>" + flocLevel.getText() + "</p>" +
+                //System checks
+                "<b>System Checks</b></br>" +
+                "<p>" + in_NTU.getText() + "</p>" +
+                "<p>" + in_PH.getText() + "</p>" +
+                "<p>" + dis_NTU.getText() + "</p>" +
+                "<p>" + dis_PH.getText() + "</p>" +
+                "<p>" + top_mani.getText() + "</p>" +
+                "<p>" + bot_mani.getText() + "</p>" +
+                "<p>" + backwash.getText() + "</p>" +
+                "<p>" + flow.getText() + "</p>" +
+                "<p>" + weather.getText() + "</p>" +
+                //Safety
+                "<b>Additional Checks</b></br>" +
+                "<p>" + failure.getText() + "</p>" +
+                "<p>" + failure_notes.getText() + "</p>" +
+                "<p>" + safety.getText() + "</p>" +
+                "<p>" + safety_notes.getText() + "</p>" +
+                "</body></html>");
+        //ACTION_SEND
+        Intent email = new Intent(Intent.ACTION_SEND);
+        email.setType("text/html");
+        Html html = null;
+        email.putExtra(Intent.EXTRA_EMAIL, new String[] { to});
+        email.putExtra(Intent.EXTRA_SUBJECT, subject);
+        email.putExtra(Intent.EXTRA_TEXT, html.fromHtml(body));
+        //add files
+        Uri uri_floc = Uri.fromFile(new File(mFileName_Floc));
+        email.putExtra(Intent.EXTRA_STREAM, uri_floc);
+        Uri uri_service = Uri.fromFile(new File(mFileName_Service));
+        email.putExtra(Intent.EXTRA_STREAM, uri_service);
+
+        startActivity(Intent.createChooser(email, "Choose an Email client :"));
+
+
+    }
+    private void openAlert(View v) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FSRActivity6.this);
+        alertDialogBuilder.setTitle(R.string.fsr_dialog_options_title);
+        alertDialogBuilder.setMessage(R.string.fsr_dialog_options_text);
+        alertDialogBuilder.setPositiveButton(R.string.fsr_dialog_submit, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //
+            }
+        });
+        alertDialogBuilder.setNeutralButton(R.string.fsr_dialog_workOrder, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //launch next activity
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        // show alert
+        alertDialog.show();
+    }
+}
+
+
+
